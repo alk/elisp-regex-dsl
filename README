@@ -1,0 +1,70 @@
+Tired of deciphering/writing emacs regexps like that one ? (it's from ruby-mode)
+"\\(^\\|[^:]\\)\\(:\\([-+~]@?\\|[/%&|^`]\\|\\*\\*?\\|<\\(<\\|=>?\\)?\\|>[>=]?\\|===?\\|=~\\|\\[\\]=?\\|\\(\\w\\|_\\)+\\([!?=]\\|\\b_*\\)\\|#{[^}\n\\\\]*\\(\\\\.[^}\n\\\\]*\\)*}\\)\\)"
+
+Then regex-dsl is for you. It allows you to write regular expressions
+in S-exps. Like this: (this is correct expression for js regexp
+literal from espresso.el)
+
+(redsl-to-regexp `(concat (char-set "=(,:")
+                          (* (or (whitespace) "\n"))
+                          (cap-group /)
+                          (+ (or (neg-char-set "\\/")
+                                 (concat "\\" (anychar))))
+                          (cap-group /)))
+
+which is readable (and writable) version of:
+"[=(,:]\\(?:\\s-\\|\n\\)*\\(/\\)\\(?:[^\\/]\\|\\\\.\\)+\\(/\\)"
+
+Obviously, the problem is double escaping of '\' which needs to be
+escaped for regexp and for elisp string. Even single level of escaping
+can be confusing, but two levels is simply crazy.
+
+Main function of this package is REDSL-TO-REGEXP which takes list and
+converts it to regular expression string. The following forms are
+understood:
+
+* <string> - concatenation of string's characters
+
+* <symbol> - same as string
+
+* (anychar) - .
+
+* (concat ...) - concatenation
+
+* (char-set <string>) - character set (converted to [<string>>])
+
+* (neg-char-set <string>) - negated character set (converted to
+  [^<string>])
+
+* (cap-group <expr>) - capture group (converted to \\(<expr>\\))
+
+* (group <expr>) - non-capture group (usually not needed, 'cause
+  expressions precedence is handled for you)
+
+* (or ...) - alternative (|)
+
+* (? <expr>) - optional element -- <expr>?
+
+* *, +, *?, +? - repetition
+
+* (word-char) - \w
+
+* (non-word-char) - \W
+
+* (char-chass <class>) - [[:<class>]] construct
+
+* line-begin, line-end - ^ and $
+
+* whitespace - \\s-
+
+* (backref <digit>) - \\<digit>
+
+* (literal <string>) - inserts <string> as is into regexp
+
+and others. See source code for more details.
+
+Precedence of regexp expressions are taken into account so you don't
+need to worry about placing extra braces.
+
+Backward translator (from regexp string to sexp) is missing. If you
+have some free time, please write one.
