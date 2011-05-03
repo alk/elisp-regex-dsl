@@ -43,9 +43,9 @@ understood:
 
 * (or ...) - alternative (|)
 
-* (? <expr>) - optional element -- <expr>?
+* (\? <expr>) - optional element -- <expr>? (NOTE: ? needs to be escaped)
 
-* *, +, *?, +? - repetition
+* *, +, *\?, +\? - repetition
 
 * (word-char) - \w
 
@@ -53,9 +53,9 @@ understood:
 
 * (char-chass <class>) - [[:<class>]] construct
 
-* line-begin, line-end - ^ and $
+* (line-begin), (line-end) - ^ and $
 
-* whitespace - \\s-
+* (whitespace) - \\s-
 
 * (backref <digit>) - \\<digit>
 
