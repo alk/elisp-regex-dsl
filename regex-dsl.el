@@ -135,7 +135,7 @@
 	  chars))
 
 (defun redsl-to-regexp-rec (re)
-  (case (car re)
+  (cl-case (car re)
     (group
      (format "\\(?:%s\\)" (redsl-to-regexp-rec (cadr re))))
     (cap-group
